@@ -1,6 +1,7 @@
 <script>
 	import Category from "./Category.svelte";
 	import { getGuid, sortOnName } from "./Util";
+	import { createEventDispatcher } from "svelte";
 
 	let categoryArray = [];
 	let categories = {};
@@ -31,6 +32,13 @@
 				item.packed = false;
 			}
 		}
+		categories = categories;
+	};
+
+	const dispatch = createEventDispatcher();
+
+	const deleteCategory = (category) => {
+		delete categories[category.id];
 		categories = categories;
 	};
 </script>
@@ -116,7 +124,11 @@
 
 	<div class="categories">
 		{#each categoryArray as category (category.id)}
-			<Category bind:category {categories} {show} />
+			<Category
+				bind:category
+				{categories}
+				{show}
+				on:delete={deleteCategory(category)} />
 		{/each}
 	</div>
 </section>

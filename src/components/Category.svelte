@@ -1,5 +1,5 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from "svelte";
 	import { bind, prevent_default } from "svelte/internal";
 	import Item from "./Item.svelte";
 	import { getGuid, blurOnKey, sortOnName } from "./Util";
@@ -45,10 +45,10 @@
 
 	const dispatch = createEventDispatcher();
 
-	const deleteItem = item => {
+	const deleteItem = (item) => {
 		delete category.items[item.id];
 		category = category;
-	}
+	};
 </script>
 
 <style>
@@ -57,11 +57,11 @@
 		border: solid lightgray 1px;
 	}
 
-	button.icon{
+	button.icon {
 		border: none;
 	}
 
-	h3{
+	h3 {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -89,12 +89,11 @@
 		margin: 0 15px;
 	}
 
-	ul{
+	ul {
 		list-style: none;
 		margin: 0;
 		padding-left: 0;
 	}
-
 </style>
 
 <!-- markup (zero or more items) goes here -->
@@ -105,9 +104,13 @@
 				bind:value={category.name}
 				on:blur={() => (editing = false)}
 				on:keypress={blurOnKey} />
-		{:else}<span on:click={() => (editing = true)}>{category.name}</span>{/if}
+		{:else}
+			<span on:click={() => (editing = true)}>{category.name}</span>
+		{/if}
 		<span class="status">{status}</span>
-		<button class="icon">&#x1F5D1;</button>
+		<button
+			class="icon"
+			on:click={() => dispatch('delete')}>&#x1F5D1;</button>
 	</h3>
 
 	<form on:submit|preventDefault={addItem}>
@@ -117,7 +120,7 @@
 
 	<ul>
 		{#each itemsToShow as item (item.id)}
-			<Item bind:item on:delete={()=> deleteItem(item)}/>
+			<Item bind:item on:delete={() => deleteItem(item)} />
 		{:else}
 			<div>This category does not contain any items yet.</div>
 		{/each}
