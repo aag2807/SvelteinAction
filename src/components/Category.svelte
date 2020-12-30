@@ -1,4 +1,5 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
 	import { bind, prevent_default } from "svelte/internal";
 	import Item from "./Item.svelte";
 	import { getGuid, blurOnKey, sortOnName } from "./Util";
@@ -41,6 +42,13 @@
 			(show === "unpacked" && !item.packed)
 		);
 	};
+
+	const dispatch = createEventDispatcher();
+
+	const deleteItem = item => {
+		delete category.items[item.id];
+		category = category;
+	}
 </script>
 
 <style>
@@ -109,7 +117,7 @@
 
 	<ul>
 		{#each itemsToShow as item (item.id)}
-			<Item bind:item />
+			<Item bind:item on:delete={()=> deleteItem(item)}/>
 		{:else}
 			<div>This category does not contain any items yet.</div>
 		{/each}
