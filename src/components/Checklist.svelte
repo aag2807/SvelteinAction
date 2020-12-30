@@ -41,6 +41,22 @@
 		delete categories[category.id];
 		categories = categories;
 	};
+
+	restore();
+
+	$: if (categories) persist();
+
+	function persist(){
+		localStorage.setItem('travel-packing', JSON.stringify(categories))
+	};
+
+	function restore() {
+		const text = localStorage.getItem('travel-packing');
+		if(text && text !== '{}'){
+			categories = JSON.parse(text);
+		}
+	}
+
 </script>
 
 <style>
@@ -96,7 +112,7 @@
 				<input type="text" bind:value={categoryName} />
 			</label>
 			<button disabled={!categoryName}>Add Category</button>
-			<button class="logout-btn"> Log Out </button>
+			<button class="logout-btn" on:click={()=> dispatch('logout')}> Log Out </button>
 		</form>
 		<p>
 			Suggested categories include backpack, clothes,

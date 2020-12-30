@@ -33,6 +33,7 @@
 		items[id] = { id, name: itemName, packed: false };
 		category.items = items;
 		itemName = "";
+		dispatch('persist')
 	};
 
 	const shouldShow = (show, item) => {
@@ -48,6 +49,7 @@
 	const deleteItem = (item) => {
 		delete category.items[item.id];
 		category = category;
+		dispatch('persist')
 	};
 </script>
 
