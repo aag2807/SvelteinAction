@@ -11,11 +11,13 @@
 	export let categories;
 	export let category;
 	export let show;
+	export let dnd;
 
 	let editing = false;
 	let itemName = "";
 	let items = [];
-	let dialog = null
+	let dialog = null;
+	let hovering = false;
 	let message = "";
 
 	$: items = Object.values(category.items);
@@ -102,10 +104,26 @@
 		margin: 0;
 		padding-left: 0;
 	}
+
+	.hover{
+		border-color: orange;
+	}
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<section>
+<section
+	class:hover={hovering}
+	on:dragenter={() => (hovering = true)}
+	on:dragleave={(event) => {
+		const { localName } = event.target;
+		if (localName === 'section') hovering = false;
+	}}
+	on:drop|preventDefault={(event) => {
+		dnd.drop(event, category.id);
+		hovering = false;
+	}}
+	on:dragover|preventDefault
+	>
 	<h3>
 		{#if editing}
 			<input
@@ -124,13 +142,13 @@
 
 	<ul>
 		{#each itemsToShow as item (item.id)}
-			<Item bind:item on:delete={() => deleteItem(item)} />
+			<Item {dnd} categoryId={categoryId} bind:item on:delete={() => deleteItem(item)} />
 		{:else}
 			<div>This category does not contain any items yet.</div>
 		{/each}
 	</ul>
 
-	<Dialog title='Category' bind:dialog>
+	<Dialog title="Category" bind:dialog>
 		<div>{message}</div>
 	</Dialog>
 </section>

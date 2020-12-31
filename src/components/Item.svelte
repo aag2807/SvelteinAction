@@ -4,6 +4,8 @@
 	import { blurOnKey } from "./util";
 
 	export let item;
+	export let categoryId;
+	export let dnd;
 
 	const dispatch = createEventDispatcher();
 	let editing = false;
@@ -52,7 +54,7 @@
 			on:keydown={blurOnKey}
 			type="text" />
 	{:else}
-		<span class="packed-{item.packed}" on:click={() => (editing = true)}>
+		<span draggable='true' on:dragstart={e => dnd.drag(e, categoryId, item.id)} class="packed-{item.packed}" on:click={() => (editing = true)}>
 			{item.name}
 		</span>
 	{/if}
