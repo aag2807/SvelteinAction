@@ -1,8 +1,12 @@
 <script>
 	import { createEventDispatcher } from "svelte";
 	import { bind, prevent_default } from "svelte/internal";
-	import Item from "./Item.svelte";
+
+	//Utilities
 	import { getGuid, blurOnKey, sortOnName } from "./Util";
+	//Components
+	import Item from "./Item.svelte";
+	import Dialog from "./Dialog.svelte";
 
 	export let categories;
 	export let category;
@@ -11,6 +15,7 @@
 	let editing = false;
 	let itemName = "";
 	let items = [];
+	let dialog = null
 	let message = "";
 
 	$: items = Object.values(category.items);
@@ -23,9 +28,10 @@
 		const duplicate = Object.values(categories).some((cat) =>
 			Object.values(cat.items).some((item) => item.name === itemName)
 		);
+
 		if (duplicate) {
 			message = `The item "${itemName}" already exists`;
-			alert(message);
+			dialog.showModal();
 			return;
 		}
 		const { items } = category;
@@ -33,7 +39,7 @@
 		items[id] = { id, name: itemName, packed: false };
 		category.items = items;
 		itemName = "";
-		dispatch('persist')
+		dispatch("persist");
 	};
 
 	const shouldShow = (show, item) => {
@@ -49,7 +55,7 @@
 	const deleteItem = (item) => {
 		delete category.items[item.id];
 		category = category;
-		dispatch('persist')
+		dispatch("persist");
 	};
 </script>
 
@@ -106,13 +112,9 @@
 				bind:value={category.name}
 				on:blur={() => (editing = false)}
 				on:keypress={blurOnKey} />
-		{:else}
-			<span on:click={() => (editing = true)}>{category.name}</span>
-		{/if}
+		{:else}<span on:click={() => (editing = true)}>{category.name}</span>{/if}
 		<span class="status">{status}</span>
-		<button
-			class="icon"
-			on:click={() => dispatch('delete')}>&#x1F5D1;</button>
+		<button class="icon" on:click={() => dispatch('delete')}>&#x1F5D1;</button>
 	</h3>
 
 	<form on:submit|preventDefault={addItem}>
@@ -127,4 +129,8 @@
 			<div>This category does not contain any items yet.</div>
 		{/each}
 	</ul>
+
+	<Dialog title='Category' bind:dialog>
+		<div>{message}</div>
+	</Dialog>
 </section>

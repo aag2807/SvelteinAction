@@ -1,11 +1,17 @@
 <script>
-	import Category from "./Category.svelte";
-	import { getGuid, sortOnName } from "./Util";
 	import { createEventDispatcher } from "svelte";
+
+	//Utilities
+	import { getGuid, sortOnName } from "./Util";
+
+	//Components
+	import Category from "./Category.svelte";
+	import Dialog from "./Dialog.svelte";
 
 	let categoryArray = [];
 	let categories = {};
 	let categoryName;
+	let dialog = null;
 	let message = "";
 	let show = "all";
 
@@ -17,7 +23,7 @@
 		);
 		if (duplicate) {
 			message = `The category "${categoryName}" already exists.`;
-			alert(message);
+			dialog.showModal();
 			return;
 		}
 		const id = getGuid();
@@ -38,6 +44,12 @@
 	const dispatch = createEventDispatcher();
 
 	const deleteCategory = (category) => {
+		if (Object.values(category.items).length) {
+			message = 'This category is not empty.';
+			dialog.showModal();
+			return;
+		}
+
 		delete categories[category.id];
 		categories = categories;
 	};
@@ -46,17 +58,16 @@
 
 	$: if (categories) persist();
 
-	function persist(){
-		localStorage.setItem('travel-packing', JSON.stringify(categories))
-	};
+	function persist() {
+		localStorage.setItem("travel-packing", JSON.stringify(categories));
+	}
 
 	function restore() {
-		const text = localStorage.getItem('travel-packing');
-		if(text && text !== '{}'){
+		const text = localStorage.getItem("travel-packing");
+		if (text && text !== "{}") {
 			categories = JSON.parse(text);
 		}
 	}
-
 </script>
 
 <style>
@@ -112,7 +123,9 @@
 				<input type="text" bind:value={categoryName} />
 			</label>
 			<button disabled={!categoryName}>Add Category</button>
-			<button class="logout-btn" on:click={()=> dispatch('logout')}> Log Out </button>
+			<button class="logout-btn" on:click={() => dispatch('logout')}>
+				Log Out
+			</button>
 		</form>
 		<p>
 			Suggested categories include backpack, clothes,
@@ -144,7 +157,12 @@
 				bind:category
 				{categories}
 				{show}
+				on:persist={persist}
 				on:delete={deleteCategory(category)} />
 		{/each}
 	</div>
 </section>
+
+<Dialog title='Checklist' bind:dialog>
+	<div>{message}</div>
+</Dialog>
