@@ -1,7 +1,7 @@
-<!-- See README.md for documentation on using this. -->
 <script>
     import dialogPolyfill from "dialog-polyfill";
     import { createEventDispatcher, onMount } from "svelte";
+
     // Boolean that determines whether a close "X" should be displayed.
     export let canClose = true;
     // Optional CSS class name to be added to the dialog element.
@@ -13,9 +13,12 @@
     export let icon = undefined;
     // Title text to display in the dialog header.
     export let title;
+
     const dispatch = createEventDispatcher();
     $: classNames = "dialog" + (className ? " " + className : "");
+
     onMount(() => dialogPolyfill.registerDialog(dialog));
+    
     function close() {
         // Parent components can optionally listen for this event.
         dispatch("close");

@@ -1,8 +1,20 @@
 <script>
+	import page from 'page'
+
 	import Login from "./components/Login.svelte";
 	import Checklist from "./components/Checklist.svelte";
+	import NotFound from './components/NotFound.svelte'
 
-	let page = Login
+
+
+	let component = Login;
+
+	page.redirect('/', '/login')
+	page('/login', () => (component = Login))
+	page('/checklist', () => (component = Checklist))
+	page('*', () => (component = NotFound))
+	page.start();
+
 </script>
 
 <style>
@@ -31,11 +43,12 @@
 	}
 </style>
 
+
 <main>
 	<h1 class="hero">Travel Packing Checklist</h1>
-	{#if page === Login}
-		<Login on:login={() => (page = Checklist)} />
-	{:else}
-		<Checklist on:logout={() => (page = Login)} />
-	{/if}
+	<svelte:component 
+		this={component}
+		on:login={() => page.show('/checklist')}
+		on:logout={() => page.show('/login')}
+	/>
 </main>
