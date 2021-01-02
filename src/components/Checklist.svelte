@@ -1,12 +1,16 @@
 <script>
 	import { createEventDispatcher } from "svelte";
 
+	//Components
+	import { flip } from "svelte/animate";
+	import Category from "./Category.svelte";
+	import Dialog from "./Dialog.svelte";
+	
 	//Utilities
 	import { getGuid, sortOnName } from "./Util";
 
-	//Components
-	import Category from "./Category.svelte";
-	import Dialog from "./Dialog.svelte";
+	const dispatch = createEventDispatcher();
+	const options = { duration: 700 };
 
 	let categoryArray = [];
 	let categories = {};
@@ -14,23 +18,24 @@
 	let dialog = null;
 	let message = "";
 	let show = "all";
-	let dragAndDrop = {
-		drag(event, categoryId, itemId) {
-			const data ={categoryId, itemId}
-			event.dataTransfer.setData('text/plain', JSON.stringify(data));
-		},
-		drop(event, categoryId) {
-			const json = event.dataTransfer.getData('text/plain');
-			const data = JSON.parse(json);
-			const category = categories[data.categoryId];
-			const item = category.item[data.itemId];
-			delete category.items[data.itemId]
-			categories[categoryId].uitems[data.itemId] = item;
-			categories = categories;
-		}
-	}
 
 	$: categoryArray = sortOnName(Object.values(categories));
+
+	let dragAndDrop = {
+		drag(event, categoryId, itemId) {
+			const data = { categoryId, itemId };
+			event.dataTransfer.setData("text/plain", JSON.stringify(data));
+		},
+		drop(event, categoryId) {
+			const json = event.dataTransfer.getData("text/plain");
+			const data = JSON.parse(json);
+			const category = categories[data.categoryId];
+			const item = category.items[data.itemId];
+			delete category.items[data.itemId];
+			categories[categoryId].items[data.itemId] = item;
+			categories = categories;
+		},
+	};
 
 	const addCategory = () => {
 		const duplicate = Object.values(categories).some(
@@ -43,8 +48,8 @@
 		}
 		const id = getGuid();
 		categories[id] = { id, name: categoryName, items: {} };
-		categories = categories;
-		categoryName = "";
+		categories = categories; // trigger update
+		categoryName = ""; // clear the input
 	};
 
 	const clearAllChecks = () => {
@@ -56,15 +61,12 @@
 		categories = categories;
 	};
 
-	const dispatch = createEventDispatcher();
-
 	const deleteCategory = (category) => {
 		if (Object.values(category.items).length) {
-			message = 'This category is not empty.';
+			message = "This category is not empty.";
 			dialog.showModal();
 			return;
 		}
-
 		delete categories[category.id];
 		categories = categories;
 	};
@@ -73,16 +75,16 @@
 
 	$: if (categories) persist();
 
-	function persist() {
+	const persist = () => {
 		localStorage.setItem("travel-packing", JSON.stringify(categories));
-	}
+	};
 
-	function restore() {
+	const restore = () => {
 		const text = localStorage.getItem("travel-packing");
 		if (text && text !== "{}") {
 			categories = JSON.parse(text);
 		}
-	}
+	};
 </script>
 
 <style>
@@ -92,9 +94,9 @@
 		justify-content: center;
 	}
 
-	.clear {
+	/* .clear {
 		margin-left: 30px;
-	}
+	} */
 
 	input[type="radio"] {
 		--size: 24px;
@@ -126,6 +128,14 @@
 		align-items: center;
 		font-size: 24px;
 		margin-top: 1em;
+	}
+
+	.animate {
+		display: inline-block;
+	}
+
+	.wrapper {
+		display: inline;
 	}
 </style>
 
@@ -168,17 +178,19 @@
 
 	<div class="categories">
 		{#each categoryArray as category (category.id)}
-			<Category
-				dnd={dragAndDrop}
-				bind:category
-				{categories}
-				{show}
-				on:persist={persist}
-				on:delete={deleteCategory(category)} />
+			<div class="wrapper" animate:flip={options}>
+				<Category
+					dnd={dragAndDrop}
+					bind:category
+					{categories}
+					{show}
+					on:persist={persist}
+					on:delete={deleteCategory(category)} />
+			</div>
 		{/each}
 	</div>
 </section>
 
-<Dialog title='Checklist' bind:dialog>
+<Dialog title="Checklist" bind:dialog>
 	<div>{message}</div>
 </Dialog>

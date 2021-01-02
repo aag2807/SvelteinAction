@@ -1,13 +1,15 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from "svelte";
 
-	import { blurOnKey } from "./util";
+	//Utilities
+	import { blurOnKey } from "./Util";
 
-	export let item;
 	export let categoryId;
 	export let dnd;
+	export let item;
 
 	const dispatch = createEventDispatcher();
+
 	let editing = false;
 </script>
 
@@ -54,9 +56,13 @@
 			on:keydown={blurOnKey}
 			type="text" />
 	{:else}
-		<span draggable='true' on:dragstart={e => dnd.drag(e, categoryId, item.id)} class="packed-{item.packed}" on:click={() => (editing = true)}>
+		<span
+			class="packed-{item.packed}"
+			draggable={true}
+			on:dragstart={(event) => dnd.drag(event, categoryId, item.id)}
+			on:click={() => (editing = true)}>
 			{item.name}
 		</span>
 	{/if}
-	<button class="icon" on:click={() => dispatch('delete')}> &#x1F5D1; </button>
+	<button class="icon" on:click={() => dispatch('delete')}>&#x1F5D1;</button>
 </li>
