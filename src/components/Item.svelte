@@ -10,6 +10,7 @@
 
 	const dispatch = createEventDispatcher();
  
+	$: if (editing) console.log('Editing item ', item.name);
 
 	let editing = false;
 </script>
@@ -49,6 +50,8 @@
 <li>
 	<input type="checkbox" bind:checked={item.packed} />
 	{#if editing}
+	
+		<!-- svelte-ignore a11y-autofocus -->
 		<input
 			autofocus
 			bind:value={item.name}

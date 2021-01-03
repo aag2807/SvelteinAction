@@ -75,11 +75,11 @@
 
 	$: if (categories) persist();
 
-	const persist = () => {
+	function persist () {
 		localStorage.setItem("travel-packing", JSON.stringify(categories));
 	};
 
-	const restore = () => {
+	function restore () {
 		const text = localStorage.getItem("travel-packing");
 		if (text && text !== "{}") {
 			categories = JSON.parse(text);

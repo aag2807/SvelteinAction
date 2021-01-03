@@ -152,7 +152,7 @@
 	</h3>
 
 	<form on:submit|preventDefault={addItem}>
-		<label> New Item <input required bind:value={itemName} /> </label>
+		<label> New Item <input data-testid="item-input" required bind:value={itemName} /> </label>
 		<button>Add Item</button>
 	</form>
 
