@@ -1,3 +1,5 @@
+site deployed in <a href="https://happy-lovelace-8231b5.netlify.app/login">Here</a>
+
 *Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
 ---
